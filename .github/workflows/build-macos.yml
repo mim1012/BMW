@@ -25,10 +25,10 @@ jobs:
 
     steps:
       - name: Checkout source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11"
           cache: "pip"
@@ -50,7 +50,7 @@ jobs:
           ditto -c -k --keepParent "dist/BMW-AutoBuyer.app" "BMW-AutoBuyer-macOS.zip"
 
       - name: Upload macOS app artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: BMW-AutoBuyer-macOS
           path: BMW-AutoBuyer-macOS.zip
