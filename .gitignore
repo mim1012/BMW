@@ -1,0 +1,33 @@
+# Local environment
+.env
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# PyInstaller outputs
+build/
+dist/
+release/
+BMW자동구매 v1/
+*.spec
+
+# Packaged archives
+*.zip
+*.tar
+*.tar.gz
+*.dmg
+
+# Runtime state
+chrome_profile/
+screenshots/
+user_config*.json
+
+# Local automation/debug captures
+api_capture*.json
+dealer_api_capture*.json
+debug_*.json
+
+# Local agent/tool state
+.gstack/
+.omx/

@@ -1,0 +1,30 @@
+BMW AutoBuyer 배포 안내
+
+실행 파일:
+- BMW-AutoBuyer.exe
+
+사용 전 준비:
+- Windows PC
+- Google Chrome 설치 필요
+- 보안 프로그램이 자동화 브라우저 실행을 차단하면 허용 필요
+
+사용 순서:
+1. BMW-AutoBuyer.exe 실행
+2. Chrome 열기 클릭
+3. 열린 Chrome에서 직접 BMW 로그인 완료
+4. 전체 스캔이 필요하면 전체 스캔 클릭
+5. 차종/옵션/고정 딜러위치 입력 후 설정 저장
+6. 구매하기 클릭
+7. QR 화면까지 자동 진행됨
+8. QR 이후 본인인증 및 후속 작업은 사용자가 브라우저에서 수동 처리
+
+생성되는 파일/폴더:
+- chrome_profile: 로그인 세션 저장
+- screenshots: QR 및 진행 화면 캡처
+- user_config*.json: 저장한 선택값
+- scanned_models.json, form_fields*.json: 스캔된 차종/옵션 정보
+
+주의:
+- exe 옆에 생성되는 파일과 폴더를 삭제하면 로그인 세션/저장 설정이 초기화될 수 있음
+- QR 화면 이후에는 자동 제출하지 않음
+- 브라우저는 사용자가 직접 닫기 전까지 유지됨

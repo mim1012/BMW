@@ -1,0 +1,55 @@
+[
+  {
+    "kind": "option",
+    "id": "",
+    "name": "trim:익스테리어",
+    "selector": "",
+    "label": "익스테리어",
+    "options": [
+      {
+        "text": "상파울로 옐로우",
+        "value": "a.tooltip:has(img[alt*=\"상파울로 옐로우\"])",
+        "selector": "a.tooltip:has(img[alt*=\"상파울로 옐로우\"])",
+        "pcode": "P0C4H",
+        "soldout": true,
+        "active": false
+      }
+    ]
+  },
+  {
+    "kind": "option",
+    "id": "",
+    "name": "trim:인테리어",
+    "selector": "",
+    "label": "인테리어",
+    "options": [
+      {
+        "text": "풀 레더 메리노 블랙/익스클루시브 하이라이트",
+        "value": "a.tooltip:has(img[alt*=\"풀 레더 메리노 블랙/익스클루시브 하이라이트\"])",
+        "selector": "a.tooltip:has(img[alt*=\"풀 레더 메리노 블랙/익스클루시브 하이라이트\"])",
+        "pcode": "FX3MM",
+        "soldout": true,
+        "active": false
+      }
+    ]
+  },
+  {
+    "kind": "option",
+    "id": "",
+    "name": "결제방법 선택:현금|BMW금융",
+    "selector": "",
+    "label": "결제방법 선택",
+    "options": [
+      {
+        "text": "현금",
+        "value": "label.section03_list:has-text('현금')",
+        "selector": "label.section03_list:has-text('현금')"
+      },
+      {
+        "text": "BMW금융",
+        "value": "label.section03_list:has-text('BMW금융')",
+        "selector": "label.section03_list:has-text('BMW금융')"
+      }
+    ]
+  }
+]

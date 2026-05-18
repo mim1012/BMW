@@ -1,0 +1,55 @@
+[
+  {
+    "kind": "option",
+    "id": "",
+    "name": "trim:익스테리어",
+    "selector": "",
+    "label": "익스테리어",
+    "options": [
+      {
+        "text": "BMW 인디비주얼 드라빗 그레이",
+        "value": "a.tooltip:has(img[alt*=\"BMW 인디비주얼 드라빗 그레이\"])",
+        "selector": "a.tooltip:has(img[alt*=\"BMW 인디비주얼 드라빗 그레이\"])",
+        "pcode": "P0C36",
+        "soldout": true,
+        "active": false
+      }
+    ]
+  },
+  {
+    "kind": "option",
+    "id": "",
+    "name": "trim:인테리어",
+    "selector": "",
+    "label": "인테리어",
+    "options": [
+      {
+        "text": "BMW 인디비주얼 익스텐디드 메리노 피오나 레드/블랙",
+        "value": "a.tooltip:has(img[alt*=\"BMW 인디비주얼 익스텐디드 메리노 피오나 레드/블랙\"])",
+        "selector": "a.tooltip:has(img[alt*=\"BMW 인디비주얼 익스텐디드 메리노 피오나 레드/블랙\"])",
+        "pcode": "FVAHZ",
+        "soldout": true,
+        "active": false
+      }
+    ]
+  },
+  {
+    "kind": "option",
+    "id": "",
+    "name": "결제방법 선택:현금|BMW금융",
+    "selector": "",
+    "label": "결제방법 선택",
+    "options": [
+      {
+        "text": "현금",
+        "value": "label.section03_list:has-text('현금')",
+        "selector": "label.section03_list:has-text('현금')"
+      },
+      {
+        "text": "BMW금융",
+        "value": "label.section03_list:has-text('BMW금융')",
+        "selector": "label.section03_list:has-text('BMW금융')"
+      }
+    ]
+  }
+]

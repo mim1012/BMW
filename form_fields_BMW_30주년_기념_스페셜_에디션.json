@@ -1,0 +1,62 @@
+[
+  {
+    "kind": "option",
+    "id": "",
+    "name": "trim:모델",
+    "selector": "",
+    "label": "모델",
+    "options": [
+      {
+        "text": "BMW 740i xDrive M 스포츠",
+        "value": "a.tooltip:has(img[alt*=\"BMW 740i xDrive M 스포츠\"])",
+        "selector": "a.tooltip:has(img[alt*=\"BMW 740i xDrive M 스포츠\"])",
+        "pcode": "31EH_30th",
+        "soldout": true,
+        "active": false
+      },
+      {
+        "text": "BMW 750e xDrive M 스포츠",
+        "value": "a.tooltip:has(img[alt*=\"BMW 750e xDrive M 스포츠\"])",
+        "selector": "a.tooltip:has(img[alt*=\"BMW 750e xDrive M 스포츠\"])",
+        "pcode": "41EH_30th",
+        "soldout": true,
+        "active": false
+      },
+      {
+        "text": "BMW 550e xDrive M 스포츠 프로",
+        "value": "a.tooltip:has(img[alt*=\"BMW 550e xDrive M 스포츠 프로\"])",
+        "selector": "a.tooltip:has(img[alt*=\"BMW 550e xDrive M 스포츠 프로\"])",
+        "pcode": "11FK_30th",
+        "soldout": true,
+        "active": false
+      },
+      {
+        "text": "BMW M3 컴페티션 M xDrive",
+        "value": "a.tooltip:has(img[alt*=\"BMW M3 컴페티션 M xDrive\"])",
+        "selector": "a.tooltip:has(img[alt*=\"BMW M3 컴페티션 M xDrive\"])",
+        "pcode": "31HJ_30th",
+        "soldout": true,
+        "active": false
+      }
+    ]
+  },
+  {
+    "kind": "option",
+    "id": "",
+    "name": "결제방법 선택:현금|BMW금융",
+    "selector": "",
+    "label": "결제방법 선택",
+    "options": [
+      {
+        "text": "현금",
+        "value": "label.section03_list:has-text('현금')",
+        "selector": "label.section03_list:has-text('현금')"
+      },
+      {
+        "text": "BMW금융",
+        "value": "label.section03_list:has-text('BMW금융')",
+        "selector": "label.section03_list:has-text('BMW금융')"
+      }
+    ]
+  }
+]

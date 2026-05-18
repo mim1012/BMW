@@ -1,0 +1,55 @@
+[
+  {
+    "kind": "option",
+    "id": "",
+    "name": "trim:익스테리어",
+    "selector": "",
+    "label": "익스테리어",
+    "options": [
+      {
+        "text": "알파인 화이트",
+        "value": "a.tooltip:has(img[alt*=\"알파인 화이트\"])",
+        "selector": "a.tooltip:has(img[alt*=\"알파인 화이트\"])",
+        "pcode": "P0300",
+        "soldout": false,
+        "active": false
+      }
+    ]
+  },
+  {
+    "kind": "option",
+    "id": "",
+    "name": "trim:인테리어",
+    "selector": "",
+    "label": "인테리어",
+    "options": [
+      {
+        "text": "타공 센사텍 꼬냑",
+        "value": "a.tooltip:has(img[alt*=\"타공 센사텍 꼬냑\"])",
+        "selector": "a.tooltip:has(img[alt*=\"타공 센사텍 꼬냑\"])",
+        "pcode": "FKHKC",
+        "soldout": true,
+        "active": false
+      }
+    ]
+  },
+  {
+    "kind": "option",
+    "id": "",
+    "name": "결제방법 선택:현금|BMW금융",
+    "selector": "",
+    "label": "결제방법 선택",
+    "options": [
+      {
+        "text": "현금",
+        "value": "label.section03_list:has-text('현금')",
+        "selector": "label.section03_list:has-text('현금')"
+      },
+      {
+        "text": "BMW금융",
+        "value": "label.section03_list:has-text('BMW금융')",
+        "selector": "label.section03_list:has-text('BMW금융')"
+      }
+    ]
+  }
+]

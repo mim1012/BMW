@@ -1,0 +1,193 @@
+[
+  {
+    "kind": "option",
+    "id": "",
+    "name": "trim:익스테리어",
+    "selector": "",
+    "label": "익스테리어",
+    "options": [
+      {
+        "text": "알파인 화이트",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(1) > a",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(1) > a",
+        "soldout": true,
+        "active": false
+      },
+      {
+        "text": "블랙 사파이어 메탈릭",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(2) > a",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(2) > a",
+        "soldout": true,
+        "active": false
+      },
+      {
+        "text": "포티마오 블루",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(3) > a",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(3) > a",
+        "soldout": true,
+        "active": false
+      },
+      {
+        "text": "브루클린 그레이 메탈릭",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(4) > a",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(4) > a",
+        "soldout": true,
+        "active": false
+      },
+      {
+        "text": "썬더나잇 메탈릭",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(5) > a",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(5) > a",
+        "soldout": true,
+        "active": false
+      }
+    ]
+  },
+  {
+    "kind": "option",
+    "id": "",
+    "name": "trim:인테리어",
+    "selector": "",
+    "label": "인테리어",
+    "options": [
+      {
+        "text": "레더 버네스카 블랙/콘트라스트 스티칭 블루",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(2) > x-temp > a",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(2) > x-temp > a",
+        "soldout": true,
+        "active": false
+      }
+    ]
+  },
+  {
+    "kind": "select",
+    "id": "",
+    "name": "",
+    "selector": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(2) > select:nth-of-type(1)",
+    "label": "현금",
+    "options": [
+      {
+        "text": "딜러사 선택",
+        "value": ""
+      }
+    ]
+  },
+  {
+    "kind": "select",
+    "id": "",
+    "name": "",
+    "selector": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(2) > select:nth-of-type(2)",
+    "label": "현금",
+    "options": [
+      {
+        "text": "전시장 선택",
+        "value": ""
+      }
+    ]
+  },
+  {
+    "kind": "select",
+    "id": "",
+    "name": "",
+    "selector": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(2) > select:nth-of-type(3)",
+    "label": "현금",
+    "options": [
+      {
+        "text": "영업사원 선택",
+        "value": ""
+      }
+    ]
+  },
+  {
+    "kind": "option",
+    "id": "",
+    "name": "결제방법 선택:현금|BMW금융",
+    "selector": "",
+    "label": "결제방법 선택",
+    "options": [
+      {
+        "text": "현금",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(3) > label:nth-of-type(1)",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(3) > label:nth-of-type(1)"
+      },
+      {
+        "text": "BMW금융",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(3) > label:nth-of-type(2)",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(3) > label:nth-of-type(2)"
+      }
+    ]
+  },
+  {
+    "kind": "option",
+    "id": "",
+    "name": "익스테리어:알파인 화이트|블랙 사파이어 메탈릭|포티마오 블루|브루클린 그레이 메탈릭|썬더나잇 메탈릭|레더 버네스카 블랙/콘트라스트 스티칭 블루",
+    "selector": "",
+    "label": "익스테리어",
+    "options": [
+      {
+        "text": "알파인 화이트",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(1) > a",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(1) > a"
+      },
+      {
+        "text": "블랙 사파이어 메탈릭",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(2) > a",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(2) > a"
+      },
+      {
+        "text": "포티마오 블루",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(3) > a",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(3) > a"
+      },
+      {
+        "text": "브루클린 그레이 메탈릭",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(4) > a",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(4) > a"
+      },
+      {
+        "text": "썬더나잇 메탈릭",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(5) > a",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(5) > a"
+      },
+      {
+        "text": "레더 버네스카 블랙/콘트라스트 스티칭 블루",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(2) > x-temp > a",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(2) > x-temp > a"
+      }
+    ]
+  },
+  {
+    "kind": "option",
+    "id": "",
+    "name": "익스테리어:알파인 화이트|블랙 사파이어 메탈릭|포티마오 블루|브루클린 그레이 메탈릭|썬더나잇 메탈릭",
+    "selector": "",
+    "label": "익스테리어",
+    "options": [
+      {
+        "text": "알파인 화이트",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(1) > a",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(1) > a"
+      },
+      {
+        "text": "블랙 사파이어 메탈릭",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(2) > a",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(2) > a"
+      },
+      {
+        "text": "포티마오 블루",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(3) > a",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(3) > a"
+      },
+      {
+        "text": "브루클린 그레이 메탈릭",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(4) > a",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(4) > a"
+      },
+      {
+        "text": "썬더나잇 메탈릭",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(5) > a",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(4) > div:nth-of-type(1) > div:nth-of-type(1) > x-temp:nth-of-type(5) > a"
+      }
+    ]
+  }
+]

@@ -1,0 +1,79 @@
+[
+  {
+    "kind": "option",
+    "id": "",
+    "name": "trim:익스테리어",
+    "selector": "",
+    "label": "익스테리어",
+    "options": [
+      {
+        "text": "BMW 인디비주얼 투톤 페인트 블랙 사파이어 & 옥사이드 그레이",
+        "value": "a.tooltip:has(img[alt*=\"BMW 인디비주얼 투톤 페인트 블랙 사파이어 & 옥사이드 그레이\"])",
+        "selector": "a.tooltip:has(img[alt*=\"BMW 인디비주얼 투톤 페인트 블랙 사파이어 & 옥사이드 그레이\"])",
+        "pcode": "P0C4A_1",
+        "soldout": false,
+        "active": false
+      },
+      {
+        "text": "BMW 인디비주얼 투톤 페인트 블랙 사파이어 & BMW 인디비주얼 드라빗 그레이",
+        "value": "a.tooltip:has(img[alt*=\"BMW 인디비주얼 투톤 페인트 블랙 사파이어 & BMW 인디비주얼 드라빗 그레이\"])",
+        "selector": "a.tooltip:has(img[alt*=\"BMW 인디비주얼 투톤 페인트 블랙 사파이어 & BMW 인디비주얼 드라빗 그레이\"])",
+        "pcode": "P0C36_1",
+        "soldout": true,
+        "active": false
+      },
+      {
+        "text": "블랙 사파이어 메탈릭",
+        "value": "a.tooltip:has(img[alt*=\"블랙 사파이어 메탈릭\"])",
+        "selector": "a.tooltip:has(img[alt*=\"블랙 사파이어 메탈릭\"])",
+        "pcode": "P0475",
+        "soldout": false,
+        "active": false
+      }
+    ]
+  },
+  {
+    "kind": "option",
+    "id": "",
+    "name": "trim:인테리어",
+    "selector": "",
+    "label": "인테리어",
+    "options": [
+      {
+        "text": "BMW 인디비주얼 레더 '메리노' 스모크 화이트",
+        "value": "a.tooltip:has(img[alt*=\"BMW 인디비주얼 레더 '메리노' 스모크 화이트\"])",
+        "selector": "a.tooltip:has(img[alt*=\"BMW 인디비주얼 레더 '메리노' 스모크 화이트\"])",
+        "pcode": "FVCFU",
+        "soldout": true,
+        "active": false
+      },
+      {
+        "text": "BMW 인디비주얼 레더 ‘메리노’ 타르투포",
+        "value": "a.tooltip:has(img[alt*=\"BMW 인디비주얼 레더 ‘메리노’ 타르투포\"])",
+        "selector": "a.tooltip:has(img[alt*=\"BMW 인디비주얼 레더 ‘메리노’ 타르투포\"])",
+        "pcode": "FVCTQ",
+        "soldout": true,
+        "active": false
+      }
+    ]
+  },
+  {
+    "kind": "option",
+    "id": "",
+    "name": "결제방법 선택:현금|BMW금융",
+    "selector": "",
+    "label": "결제방법 선택",
+    "options": [
+      {
+        "text": "현금",
+        "value": "label.section03_list:has-text('현금')",
+        "selector": "label.section03_list:has-text('현금')"
+      },
+      {
+        "text": "BMW금융",
+        "value": "label.section03_list:has-text('BMW금융')",
+        "selector": "label.section03_list:has-text('BMW금융')"
+      }
+    ]
+  }
+]

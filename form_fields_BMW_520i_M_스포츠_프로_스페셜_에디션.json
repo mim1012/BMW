@@ -1,0 +1,103 @@
+[
+  {
+    "kind": "option",
+    "id": "",
+    "name": "trim:익스테리어",
+    "selector": "",
+    "label": "익스테리어",
+    "options": [
+      {
+        "text": "소피스토 그레이 브릴리언트 이펙트",
+        "value": "a.tooltip:has(img[alt*=\"소피스토 그레이 브릴리언트 이펙트\"])",
+        "selector": "a.tooltip:has(img[alt*=\"소피스토 그레이 브릴리언트 이펙트\"])",
+        "pcode": "P0A90",
+        "soldout": true,
+        "active": false
+      },
+      {
+        "text": "블랙 사파이어 메탈릭",
+        "value": "a.tooltip:has(img[alt*=\"블랙 사파이어 메탈릭\"])",
+        "selector": "a.tooltip:has(img[alt*=\"블랙 사파이어 메탈릭\"])",
+        "pcode": "P0475",
+        "soldout": true,
+        "active": false
+      },
+      {
+        "text": "브루클린 그레이 메탈릭",
+        "value": "a.tooltip:has(img[alt*=\"브루클린 그레이 메탈릭\"])",
+        "selector": "a.tooltip:has(img[alt*=\"브루클린 그레이 메탈릭\"])",
+        "pcode": "P0C4P",
+        "soldout": true,
+        "active": false
+      },
+      {
+        "text": "미네랄 화이트 메탈릭",
+        "value": "a.tooltip:has(img[alt*=\"미네랄 화이트 메탈릭\"])",
+        "selector": "a.tooltip:has(img[alt*=\"미네랄 화이트 메탈릭\"])",
+        "pcode": "P0A96",
+        "soldout": true,
+        "active": false
+      },
+      {
+        "text": "옥사이드 그레이",
+        "value": "a.tooltip:has(img[alt*=\"옥사이드 그레이\"])",
+        "selector": "a.tooltip:has(img[alt*=\"옥사이드 그레이\"])",
+        "pcode": "P0C4A",
+        "soldout": true,
+        "active": false
+      }
+    ]
+  },
+  {
+    "kind": "option",
+    "id": "",
+    "name": "trim:인테리어",
+    "selector": "",
+    "label": "인테리어",
+    "options": [
+      {
+        "text": "베간자 에스프레소 브라운",
+        "value": "a.tooltip:has(img[alt*=\"베간자 에스프레소 브라운\"])",
+        "selector": "a.tooltip:has(img[alt*=\"베간자 에스프레소 브라운\"])",
+        "pcode": "FKSJX",
+        "soldout": true,
+        "active": false
+      },
+      {
+        "text": "베간자 블랙",
+        "value": "a.tooltip:has(img[alt*=\"베간자 블랙\"])",
+        "selector": "a.tooltip:has(img[alt*=\"베간자 블랙\"])",
+        "pcode": "FKSSW",
+        "soldout": true,
+        "active": false
+      },
+      {
+        "text": "베간자 스모크 화이트",
+        "value": "a.tooltip:has(img[alt*=\"베간자 스모크 화이트\"])",
+        "selector": "a.tooltip:has(img[alt*=\"베간자 스모크 화이트\"])",
+        "pcode": "FKSFU",
+        "soldout": true,
+        "active": false
+      }
+    ]
+  },
+  {
+    "kind": "option",
+    "id": "",
+    "name": "결제방법 선택:현금|BMW금융",
+    "selector": "",
+    "label": "결제방법 선택",
+    "options": [
+      {
+        "text": "현금",
+        "value": "label.section03_list:has-text('현금')",
+        "selector": "label.section03_list:has-text('현금')"
+      },
+      {
+        "text": "BMW금융",
+        "value": "label.section03_list:has-text('BMW금융')",
+        "selector": "label.section03_list:has-text('BMW금융')"
+      }
+    ]
+  }
+]

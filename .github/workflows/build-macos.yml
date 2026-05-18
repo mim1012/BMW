@@ -1,0 +1,58 @@
+name: Build macOS App
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - ".github/workflows/build-macos.yml"
+      - "build_mac.sh"
+      - "gui_app.py"
+      - "requirements.txt"
+      - "scanned_models.json"
+      - "form_fields*.json"
+
+permissions:
+  contents: read
+
+jobs:
+  build-macos:
+    name: Build BMW-AutoBuyer.app
+    runs-on: macos-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip install pyinstaller
+
+      - name: Build macOS app
+        run: |
+          chmod +x build_mac.sh
+          ./build_mac.sh
+
+      - name: Package app bundle
+        run: |
+          test -d "dist/BMW-AutoBuyer.app"
+          ditto -c -k --keepParent "dist/BMW-AutoBuyer.app" "BMW-AutoBuyer-macOS.zip"
+
+      - name: Upload macOS app artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BMW-AutoBuyer-macOS
+          path: BMW-AutoBuyer-macOS.zip
+          if-no-files-found: error
+          retention-days: 14

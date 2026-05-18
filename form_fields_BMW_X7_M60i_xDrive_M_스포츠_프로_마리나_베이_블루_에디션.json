@@ -1,0 +1,55 @@
+[
+  {
+    "kind": "option",
+    "id": "",
+    "name": "trim:익스테리어",
+    "selector": "",
+    "label": "익스테리어",
+    "options": [
+      {
+        "text": "M 마리나 베이 블루",
+        "value": "a.tooltip:has(img[alt*=\"M 마리나 베이 블루\"])",
+        "selector": "a.tooltip:has(img[alt*=\"M 마리나 베이 블루\"])",
+        "pcode": "P0C1K",
+        "soldout": true,
+        "active": false
+      }
+    ]
+  },
+  {
+    "kind": "option",
+    "id": "",
+    "name": "trim:인테리어",
+    "selector": "",
+    "label": "인테리어",
+    "options": [
+      {
+        "text": "BMW 인디비주얼 익스텐디드 레더 트림 메리노 타르투포",
+        "value": "a.tooltip:has(img[alt*=\"BMW 인디비주얼 익스텐디드 레더 트림 메리노 타르투포\"])",
+        "selector": "a.tooltip:has(img[alt*=\"BMW 인디비주얼 익스텐디드 레더 트림 메리노 타르투포\"])",
+        "pcode": "FVATQ",
+        "soldout": true,
+        "active": false
+      }
+    ]
+  },
+  {
+    "kind": "option",
+    "id": "",
+    "name": "결제방법 선택:현금|BMW금융",
+    "selector": "",
+    "label": "결제방법 선택",
+    "options": [
+      {
+        "text": "현금",
+        "value": "label.section03_list:has-text('현금')",
+        "selector": "label.section03_list:has-text('현금')"
+      },
+      {
+        "text": "BMW금융",
+        "value": "label.section03_list:has-text('BMW금융')",
+        "selector": "label.section03_list:has-text('BMW금융')"
+      }
+    ]
+  }
+]

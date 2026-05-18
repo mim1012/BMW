@@ -1,0 +1,55 @@
+[
+  {
+    "kind": "option",
+    "id": "",
+    "name": "trim:익스테리어",
+    "selector": "",
+    "label": "익스테리어",
+    "options": [
+      {
+        "text": "BMW 인디비주얼 스톰 베이 메탈릭",
+        "value": "a.tooltip:has(img[alt*=\"BMW 인디비주얼 스톰 베이 메탈릭\"])",
+        "selector": "a.tooltip:has(img[alt*=\"BMW 인디비주얼 스톰 베이 메탈릭\"])",
+        "pcode": "P0C3N_1",
+        "soldout": true,
+        "active": false
+      }
+    ]
+  },
+  {
+    "kind": "option",
+    "id": "",
+    "name": "trim:인테리어",
+    "selector": "",
+    "label": "인테리어",
+    "options": [
+      {
+        "text": "BMW 인디비주얼 레더 메리노 블랙/다크 바이올렛",
+        "value": "a.tooltip:has(img[alt*=\"BMW 인디비주얼 레더 메리노 블랙/다크 바이올렛\"])",
+        "selector": "a.tooltip:has(img[alt*=\"BMW 인디비주얼 레더 메리노 블랙/다크 바이올렛\"])",
+        "pcode": "FZCKH",
+        "soldout": true,
+        "active": false
+      }
+    ]
+  },
+  {
+    "kind": "option",
+    "id": "",
+    "name": "결제방법 선택:현금|BMW금융",
+    "selector": "",
+    "label": "결제방법 선택",
+    "options": [
+      {
+        "text": "현금",
+        "value": "label.section03_list:has-text('현금')",
+        "selector": "label.section03_list:has-text('현금')"
+      },
+      {
+        "text": "BMW금융",
+        "value": "label.section03_list:has-text('BMW금융')",
+        "selector": "label.section03_list:has-text('BMW금융')"
+      }
+    ]
+  }
+]
