@@ -32,18 +32,20 @@ for path in "$ROOT"/form_fields_*.json; do
 done
 shopt -u nullglob
 
-arch_args=()
+pyinstaller_args=(
+    --noconfirm
+    --clean
+    --onedir
+    --windowed
+    --name "BMW-AutoBuyer"
+)
+
 if [[ -n "${PYINSTALLER_TARGET_ARCH:-}" ]]; then
-    arch_args+=(--target-arch "$PYINSTALLER_TARGET_ARCH")
+    pyinstaller_args+=(--target-arch "$PYINSTALLER_TARGET_ARCH")
 fi
 
 "$PYTHON" -m PyInstaller \
-    --noconfirm \
-    --clean \
-    --onedir \
-    --windowed \
-    --name "BMW-AutoBuyer" \
-    "${arch_args[@]}" \
+    "${pyinstaller_args[@]}" \
     --collect-all playwright \
     --collect-all greenlet \
     --collect-all pyee \
