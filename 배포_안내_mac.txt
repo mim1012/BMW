@@ -33,6 +33,23 @@ GitHub Actions에서 빌드:
 5. 완료 후 Artifacts에서 "BMW-AutoBuyer-macOS"를 내려받습니다.
 6. ZIP을 풀면 BMW-AutoBuyer.app이 들어 있습니다.
 
+선택: Apple 공증까지 할 경우:
+1. Apple Developer Program 계정에서 Developer ID Application 인증서를 준비합니다.
+2. GitHub 저장소 Settings > Secrets and variables > Actions에 아래 값을 등록합니다.
+   - APPLE_CERTIFICATE_BASE64: Developer ID Application .p12 파일을 base64로 인코딩한 값
+   - APPLE_ID: Apple Developer 계정 이메일
+   - APPLE_APP_SPECIFIC_PASSWORD: Apple ID 앱 암호
+   - APPLE_CERTIFICATE_PASSWORD: .p12 내보내기 암호를 설정한 경우에만 입력
+3. MACOS_BUNDLE_ID는 선택 Variables로 등록할 수 있습니다.
+4. APPLE_SIGNING_IDENTITY와 APPLE_TEAM_ID는 .p12 인증서에서 자동으로 읽습니다.
+5. .p12 base64 값은 Mac에서 아래처럼 만들 수 있습니다.
+   base64 -i DeveloperIDApplication.p12 | tr -d '\n' | pbcopy
+
+기본 GitHub Actions 빌드 흐름:
+1. PyInstaller로 BMW-AutoBuyer.app 생성
+2. Apple 공증 Secrets가 있으면 코드 서명, 공증, stapling 수행
+3. Apple 공증 Secrets가 없으면 unsigned 앱으로 ZIP 업로드
+
 사용 순서:
 1. dist/BMW-AutoBuyer.app 실행
 2. Chrome 열기 클릭
@@ -52,5 +69,8 @@ GitHub Actions에서 빌드:
 주의:
 - Windows용 BMW-AutoBuyer.exe는 macOS에서 실행되지 않습니다.
 - PyInstaller는 기본적으로 크로스 컴파일러가 아니므로 macOS용 .app은 Mac에서 빌드해야 합니다.
-- 인터넷으로 배포하면 Gatekeeper 경고가 나올 수 있습니다. 정식 외부 배포는 Apple 개발자 인증서로 코드 서명 및 공증이 필요합니다.
+- Apple 공증 Secrets가 없어도 GitHub Actions에서 macOS 앱 빌드는 됩니다.
+- Apple 공증 없이 배포한 앱은 받는 Mac에서 Gatekeeper 경고나 "손상되었기 때문에 열 수 없습니다" 메시지가 나올 수 있습니다.
+- 인증서와 앱 암호를 사용할 경우 저장소에 커밋하지 말고 GitHub Actions Secrets에만 보관합니다.
+- MACOS_BUNDLE_ID는 Apple Developer 계정에서 사용하는 고유 reverse-DNS 형식으로 바꾸는 것을 권장합니다.
 - QR 화면 이후에는 자동 제출하지 않습니다.

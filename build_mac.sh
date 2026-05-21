@@ -4,6 +4,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT"
 
+MACOS_BUNDLE_ID="${MACOS_BUNDLE_ID:-com.bmwautobuyer.app}"
+
 if [[ -x "$ROOT/.venv/bin/python" ]]; then
     PYTHON="$ROOT/.venv/bin/python"
 else
@@ -38,6 +40,7 @@ pyinstaller_args=(
     --onedir
     --windowed
     --name "BMW-AutoBuyer"
+    --osx-bundle-identifier "$MACOS_BUNDLE_ID"
 )
 
 if [[ -n "${PYINSTALLER_TARGET_ARCH:-}" ]]; then
@@ -54,5 +57,6 @@ fi
 
 echo ""
 echo "Build complete: $ROOT/dist/BMW-AutoBuyer.app"
+echo "Bundle identifier: $MACOS_BUNDLE_ID"
 echo "Note: target Mac must have Google Chrome installed."
 echo "Optional: set PYINSTALLER_TARGET_ARCH=arm64, x86_64, or universal2 before running this script."

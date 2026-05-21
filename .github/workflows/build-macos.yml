@@ -2,6 +2,22 @@ name: Build macOS App
 
 on:
   workflow_dispatch:
+    inputs:
+      bundle_id:
+        description: "macOS bundle identifier"
+        required: false
+        default: "com.bmwautobuyer.app"
+        type: string
+      target_arch:
+        description: "PyInstaller target arch: current, arm64, x86_64, or universal2"
+        required: false
+        default: "current"
+        type: choice
+        options:
+          - current
+          - arm64
+          - x86_64
+          - universal2
   push:
     branches:
       - main
@@ -21,7 +37,12 @@ jobs:
   build-macos:
     name: Build BMW-AutoBuyer.app
     runs-on: macos-latest
-    timeout-minutes: 30
+    timeout-minutes: 90
+    env:
+      APP_PATH: dist/BMW-AutoBuyer.app
+      NOTARY_ZIP: BMW-AutoBuyer-notary.zip
+      RELEASE_ZIP: BMW-AutoBuyer-macOS.zip
+      DEFAULT_BUNDLE_ID: com.bmwautobuyer.app
 
     steps:
       - name: Checkout source
@@ -39,20 +60,145 @@ jobs:
           python -m pip install -r requirements.txt
           python -m pip install pyinstaller
 
+      - name: Resolve build options
+        run: |
+          bundle_id="${{ github.event.inputs.bundle_id }}"
+          if [[ -z "$bundle_id" ]]; then
+            bundle_id="${{ vars.MACOS_BUNDLE_ID }}"
+          fi
+          if [[ -z "$bundle_id" ]]; then
+            bundle_id="$DEFAULT_BUNDLE_ID"
+          fi
+
+          target_arch="${{ github.event.inputs.target_arch }}"
+          if [[ "$target_arch" == "current" ]]; then
+            target_arch=""
+          fi
+
+          echo "MACOS_BUNDLE_ID=$bundle_id" >> "$GITHUB_ENV"
+          echo "PYINSTALLER_TARGET_ARCH=$target_arch" >> "$GITHUB_ENV"
+          echo "Using bundle identifier: $bundle_id"
+          if [[ -n "$target_arch" ]]; then
+            echo "Using PyInstaller target arch: $target_arch"
+          fi
+
       - name: Build macOS app
         run: |
           chmod +x build_mac.sh
           ./build_mac.sh
 
+      - name: Detect optional Apple signing credentials
+        env:
+          APPLE_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+        run: |
+          if [[ -n "$APPLE_CERTIFICATE_BASE64" && -n "$APPLE_ID" && -n "$APPLE_APP_SPECIFIC_PASSWORD" ]]; then
+            echo "HAS_APPLE_SIGNING=true" >> "$GITHUB_ENV"
+            echo "Apple signing credentials found. The app will be signed and notarized."
+          else
+            echo "HAS_APPLE_SIGNING=false" >> "$GITHUB_ENV"
+            echo "::warning::Apple signing credentials were not found. Building an unsigned macOS app artifact."
+          fi
+
+      - name: Import Developer ID certificate
+        if: env.HAS_APPLE_SIGNING == 'true'
+        env:
+          APPLE_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+        run: |
+          certificate_path="$RUNNER_TEMP/developer-id.p12"
+          keychain_path="$RUNNER_TEMP/app-signing.keychain-db"
+          keychain_password="$(uuidgen)"
+
+          printf '%s' "$APPLE_CERTIFICATE_BASE64" | base64 -D > "$certificate_path"
+
+          security create-keychain -p "$keychain_password" "$keychain_path"
+          security set-keychain-settings -lut 21600 "$keychain_path"
+          security unlock-keychain -p "$keychain_password" "$keychain_path"
+          security import "$certificate_path" \
+            -P "$APPLE_CERTIFICATE_PASSWORD" \
+            -A \
+            -t cert \
+            -f pkcs12 \
+            -k "$keychain_path"
+          security list-keychain -d user -s "$keychain_path"
+          security set-key-partition-list \
+            -S apple-tool:,apple:,codesign: \
+            -s \
+            -k "$keychain_password" \
+            "$keychain_path"
+
+          identity_output="$(security find-identity -v -p codesigning "$keychain_path")"
+          printf '%s\n' "$identity_output"
+          signing_identity="$(printf '%s\n' "$identity_output" | sed -n 's/.*"\(Developer ID Application:.*\)".*/\1/p' | head -n 1)"
+          if [[ -z "$signing_identity" ]]; then
+            echo "::error::No Developer ID Application signing identity was found in the imported certificate"
+            exit 1
+          fi
+          if [[ "$signing_identity" =~ \(([A-Z0-9]{10})\)$ ]]; then
+            notary_team_id="${BASH_REMATCH[1]}"
+          else
+            echo "::error::Could not derive Apple Team ID from signing identity: $signing_identity"
+            exit 1
+          fi
+
+          echo "KEYCHAIN_PATH=$keychain_path" >> "$GITHUB_ENV"
+          echo "CERTIFICATE_PATH=$certificate_path" >> "$GITHUB_ENV"
+          echo "SIGNING_IDENTITY=$signing_identity" >> "$GITHUB_ENV"
+          echo "NOTARY_TEAM_ID=$notary_team_id" >> "$GITHUB_ENV"
+
+      - name: Sign app bundle
+        if: env.HAS_APPLE_SIGNING == 'true'
+        run: |
+          test -d "$APP_PATH"
+          codesign \
+            --force \
+            --deep \
+            --options runtime \
+            --timestamp \
+            --sign "$SIGNING_IDENTITY" \
+            "$APP_PATH"
+          codesign --verify --deep --strict --verbose=2 "$APP_PATH"
+
+      - name: Notarize app bundle
+        if: env.HAS_APPLE_SIGNING == 'true'
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+        run: |
+          ditto -c -k --keepParent "$APP_PATH" "$NOTARY_ZIP"
+          xcrun notarytool submit "$NOTARY_ZIP" \
+            --apple-id "$APPLE_ID" \
+            --password "$APPLE_APP_SPECIFIC_PASSWORD" \
+            --team-id "$NOTARY_TEAM_ID" \
+            --wait
+
+      - name: Staple and assess app
+        if: env.HAS_APPLE_SIGNING == 'true'
+        run: |
+          xcrun stapler staple "$APP_PATH"
+          xcrun stapler validate "$APP_PATH"
+          spctl --assess --type execute --verbose=4 "$APP_PATH"
+
       - name: Package app bundle
         run: |
-          test -d "dist/BMW-AutoBuyer.app"
-          ditto -c -k --keepParent "dist/BMW-AutoBuyer.app" "BMW-AutoBuyer-macOS.zip"
+          ditto -c -k --keepParent "$APP_PATH" "$RELEASE_ZIP"
+
+      - name: Clean signing keychain
+        if: always()
+        run: |
+          if [[ -n "${KEYCHAIN_PATH:-}" ]]; then
+            security delete-keychain "$KEYCHAIN_PATH" || true
+          fi
+          if [[ -n "${CERTIFICATE_PATH:-}" ]]; then
+            rm -f "$CERTIFICATE_PATH"
+          fi
 
       - name: Upload macOS app artifact
         uses: actions/upload-artifact@v6
         with:
           name: BMW-AutoBuyer-macOS
-          path: BMW-AutoBuyer-macOS.zip
+          path: ${{ env.RELEASE_ZIP }}
           if-no-files-found: error
           retention-days: 14
