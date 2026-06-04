@@ -2398,6 +2398,44 @@ class BMWApp(tk.Tk):
         except Exception as e:
             self._log(f"{config_file.name} 로드 오류: {e}")
 
+    def _restore_saved_values_for_url(self, url: str):
+        config_file = config_file_for_url(url)
+        try:
+            cfg, config_file = load_config_for_url(url)
+            if not cfg:
+                return
+            saved = cfg.get("__fields__", {})
+            for f, var in self._field_widgets:
+                k = self._field_key(f)
+                if k in saved:
+                    try:
+                        var.set(saved[k])
+                    except Exception:
+                        pass
+        except Exception as e:
+            self._log(f"{config_file.name} 로드 오류: {e}")
+
+    def _reload_scanned_model_data(self):
+        model_name = self._model_var.get()
+        url = self._url_var.get().strip() or self._models.get(model_name) or PRODUCT_URL
+        if model_name in self._models:
+            url = self._models[model_name]
+            self._url_var.set(url)
+
+        fields_file = fields_file_for_url(url)
+        if not fields_file.exists():
+            self._load_current_model_data(show_empty=False)
+            return
+
+        try:
+            fields = json.loads(fields_file.read_text(encoding="utf-8"))
+            self._render_fields(fields)
+            self._restore_saved_values_for_url(url)
+            self._set_status(f"스캔 갱신 완료 ({len(fields)}개) — 최신 데이터가 화면에 반영되었습니다.")
+        except Exception as e:
+            self._log(f"{fields_file.name} 로드 오류: {e}")
+            self._load_current_model_data(show_empty=False)
+
     def _on_save(self):
         url = self._url_var.get().strip()
         cfg = {
@@ -2576,18 +2614,7 @@ class BMWApp(tk.Tk):
                     self._btn_open.config(state=tk.NORMAL)
                     self._btn_scan_all.config(state=tk.NORMAL)
                     url = self._url_var.get().strip() or PRODUCT_URL
-                    config_file = config_file_for_url(url)
-                    try:
-                        cfg, config_file = load_config_for_url(url)
-                        if cfg:
-                            saved = cfg.get("__fields__", {})
-                            for f, var in self._field_widgets:
-                                k = self._field_key(f)
-                                if k in saved:
-                                    try: var.set(saved[k])
-                                    except Exception: pass
-                    except Exception as e:
-                        self._log(f"{config_file.name} 로드 오류: {e}")
+                    self._restore_saved_values_for_url(url)
                     self._set_status(f"스캔 완료 ({len(data)}개) — 값 선택 후 '설정 저장' → '구매하기'")
                 elif etype == "models_discovered":
                     DISCOVERED_PRODUCT_MODELS.update({url: name for name, url in data})
@@ -2602,7 +2629,7 @@ class BMWApp(tk.Tk):
                 elif etype == "scan_all_done":
                     self._btn_open.config(state=tk.DISABLED)
                     self._btn_scan_all.config(state=tk.NORMAL)
-                    self._load_current_model_data(show_empty=False)
+                    self._reload_scanned_model_data()
                     messagebox.showinfo("전체 스캔", f"{data}개 차종 스캔이 완료되었습니다.")
                 elif etype == "need_login":
                     self._set_status("브라우저에서 로그인 완료 후 아래 버튼 클릭")
