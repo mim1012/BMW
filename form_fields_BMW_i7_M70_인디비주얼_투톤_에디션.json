@@ -2,28 +2,42 @@
   {
     "kind": "option",
     "id": "",
-    "name": "trim:익스테리어 알파인 화이트",
+    "name": "trim:익스테리어 BMW 인디비주얼 투톤 페인트 블랙 사파이어 & 옥사이드 그레이",
     "selector": "",
-    "label": "익스테리어 알파인 화이트",
+    "label": "익스테리어 BMW 인디비주얼 투톤 페인트 블랙 사파이어 & 옥사이드 그레이",
     "options": [
       {
-        "text": "알파인 화이트",
-        "value": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a",
-        "selector": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a",
+        "text": "BMW 인디비주얼 투톤 페인트 블랙 사파이어 & 옥사이드 그레이",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a:nth-of-type(1)",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a:nth-of-type(1)",
         "soldout": false,
         "active": true
+      },
+      {
+        "text": "BMW 인디비주얼 투톤 페인트 블랙 사파이어 & BMW 인디비주얼 드라빗 그레이",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a:nth-of-type(2)",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a:nth-of-type(2)",
+        "soldout": true,
+        "active": false
+      },
+      {
+        "text": "블랙 사파이어 메탈릭",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a:nth-of-type(3)",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a:nth-of-type(3)",
+        "soldout": false,
+        "active": false
       }
     ]
   },
   {
     "kind": "option",
     "id": "",
-    "name": "trim:인테리어 타공 센사텍 꼬냑",
+    "name": "trim:인테리어 BMW 인디비주얼 레더 ‘메리노’ 타르투포",
     "selector": "",
-    "label": "인테리어 타공 센사텍 꼬냑",
+    "label": "인테리어 BMW 인디비주얼 레더 ‘메리노’ 타르투포",
     "options": [
       {
-        "text": "타공 센사텍 꼬냑",
+        "text": "BMW 인디비주얼 레더 ‘메리노’ 타르투포",
         "value": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(2) > div > a",
         "selector": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(2) > div > a",
         "soldout": false,
@@ -43,8 +57,16 @@
         "value": ""
       },
       {
+        "text": "코오롱 모터스",
+        "value": "01631"
+      },
+      {
         "text": "한독 모터스",
         "value": "28261"
+      },
+      {
+        "text": "삼천리 모터스",
+        "value": "25237"
       }
     ]
   },

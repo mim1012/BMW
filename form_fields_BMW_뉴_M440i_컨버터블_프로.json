@@ -1,0 +1,134 @@
+[
+  {
+    "kind": "option",
+    "id": "",
+    "name": "trim:익스테리어",
+    "selector": "",
+    "label": "익스테리어",
+    "options": [
+      {
+        "text": "브루클린 그레이 메탈릭",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a:nth-of-type(1)",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a:nth-of-type(1)",
+        "soldout": true,
+        "active": false
+      },
+      {
+        "text": "파이어 레드",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a:nth-of-type(2)",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a:nth-of-type(2)",
+        "soldout": true,
+        "active": false
+      },
+      {
+        "text": "알파인 화이트",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a:nth-of-type(3)",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a:nth-of-type(3)",
+        "soldout": true,
+        "active": false
+      },
+      {
+        "text": "포티마오 블루",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a:nth-of-type(4)",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a:nth-of-type(4)",
+        "soldout": true,
+        "active": false
+      },
+      {
+        "text": "블랙 사파이어 메탈릭",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a:nth-of-type(5)",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a:nth-of-type(5)",
+        "soldout": true,
+        "active": false
+      }
+    ]
+  },
+  {
+    "kind": "option",
+    "id": "",
+    "name": "trim:인테리어",
+    "selector": "",
+    "label": "인테리어",
+    "options": [
+      {
+        "text": "BMW 인디비주얼 익스텐디드 레더 트림 메리노 아이보리 화이트",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(2) > div > a:nth-of-type(1)",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(2) > div > a:nth-of-type(1)",
+        "soldout": true,
+        "active": false
+      },
+      {
+        "text": "BMW 인디비주얼 익스텐디드 레더 트림 메리노 타르투포",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(2) > div > a:nth-of-type(2)",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(2) > div > a:nth-of-type(2)",
+        "soldout": true,
+        "active": false
+      },
+      {
+        "text": "레더 버네스카 모카 데코 스티칭",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(2) > div > a:nth-of-type(3)",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(2) > div > a:nth-of-type(3)",
+        "soldout": true,
+        "active": false
+      }
+    ]
+  },
+  {
+    "kind": "select",
+    "id": "",
+    "name": "dealer",
+    "selector": "select[name=\"dealer\"]",
+    "label": "딜러사",
+    "options": [
+      {
+        "text": "딜러사 선택",
+        "value": ""
+      }
+    ]
+  },
+  {
+    "kind": "select",
+    "id": "",
+    "name": "showRoom",
+    "selector": "select[name=\"showRoom\"]",
+    "label": "전시장",
+    "options": [
+      {
+        "text": "전시장 선택",
+        "value": ""
+      }
+    ]
+  },
+  {
+    "kind": "select",
+    "id": "",
+    "name": "",
+    "selector": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > select:nth-of-type(3)",
+    "label": "현금",
+    "options": [
+      {
+        "text": "영업사원 선택",
+        "value": ""
+      }
+    ]
+  },
+  {
+    "kind": "option",
+    "id": "",
+    "name": "결방법 선택:현금|BMW금융",
+    "selector": "",
+    "label": "결방법 선택",
+    "options": [
+      {
+        "text": "현금",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(2) > div > label:nth-of-type(1)",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(2) > div > label:nth-of-type(1)"
+      },
+      {
+        "text": "BMW금융",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(2) > div > label:nth-of-type(2)",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(2) > div > label:nth-of-type(2)"
+      }
+    ]
+  }
+]

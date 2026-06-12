@@ -34,12 +34,8 @@ FIELDS_FILE = BASE_DIR / "form_fields.json"
 MODELS_FILE = BASE_DIR / "scanned_models.json"
 SAVE_DIR.mkdir(exist_ok=True)
 
-PRODUCT_MODELS = [
-    ("BMW M240i", "https://shop.bmw.co.kr/online/oom/OMG4223020"),
-    ("BMW 뉴 M440i 쿠페 프로", "https://shop.bmw.co.kr/online/oom/OOM24090002"),
-    ("BMW Online Exclusive 모델 목록", "https://shop.bmw.co.kr/online/oem/model"),
-]
-PRODUCT_URL = PRODUCT_MODELS[0][1]
+PRODUCT_MODELS = []
+PRODUCT_URL = "https://shop.bmw.co.kr/online/oem/model"
 DISCOVERED_PRODUCT_MODELS = {}
 CHROME_PROFILE_DIR = BASE_DIR / "chrome_profile"
 CHROME_DEBUG_PORT = 9222
@@ -245,9 +241,16 @@ SCAN_JS = """
         }
     }
     const out=[];
-    document.querySelectorAll('.revervation_wrap2 .trim').forEach(trim=>{
-        const label = textOf(trim.querySelector('h3')) || sectionLabel(trim);
-        const opts = Array.from(trim.querySelectorAll('a.tooltip')).map((el, idx)=>{
+    // 구형(.revervation_wrap2 .trim) + 신형(.rsv-section) 모두 지원
+    const trimContainers = [
+        ...Array.from(document.querySelectorAll('.revervation_wrap2 .trim')),
+        ...Array.from(document.querySelectorAll('.rsv-section')).filter(s =>
+            /(익스테리어|인테리어|Exterior|Interior)/i.test(s.querySelector('h3,h4')?.innerText || '')
+        )
+    ];
+    trimContainers.forEach(trim=>{
+        const label = textOf(trim.querySelector('h3,h4')) || sectionLabel(trim);
+        const opts = Array.from(trim.querySelectorAll('a.tooltip, a.activable')).map((el, idx)=>{
             const img = el.querySelector('img[alt]');
             const tip = el.querySelector('.tooltiptext');
             const text = (img?.getAttribute('alt') || textOf(tip) || optionText(el) || `${label} ${idx + 1}`).trim();
@@ -266,6 +269,7 @@ SCAN_JS = """
         }
     });
 
+    const DEALER_LABELS = {dealer:'딜러사', showRoom:'전시장'};
     document.querySelectorAll('select').forEach(el=>{
         if(el.disabled) return;
         const opts=Array.from(el.options).map(o=>({text:o.text.trim(),value:o.value}))
@@ -273,7 +277,8 @@ SCAN_JS = """
         const fallback = Array.from(el.options).map(o=>({text:o.text.trim(),value:o.value})).filter(o=>o.text);
         const finalOpts = opts.length ? opts : fallback;
         if(!finalOpts.length) return;
-        out.push({kind:'select',id:el.id||'',name:el.name||'',selector:selector(el),label:lbl(el),options:finalOpts});
+        const resolvedLabel = DEALER_LABELS[el.name] || lbl(el) || el.name || el.id || '';
+        out.push({kind:'select',id:el.id||'',name:el.name||'',selector:selector(el),label:resolvedLabel,options:finalOpts});
     });
     document.querySelectorAll('input[type=text],input[type=tel],input[type=number],input[type=email],textarea').forEach(el=>{
         if(el.disabled||el.readOnly) return;
@@ -532,7 +537,51 @@ def run_scan_all_models():
         evt_q.put(("error", traceback.format_exc()))
 
 
+def _find_chrome_exe() -> str:
+    """시스템에서 Chrome 실행 파일 경로를 찾습니다."""
+    import os, sys
+    if sys.platform == "darwin":
+        candidates = [
+            "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+            os.path.expanduser("~/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"),
+        ]
+    else:
+        candidates = [
+            os.path.expandvars(r"%ProgramFiles%\Google\Chrome\Application\chrome.exe"),
+            os.path.expandvars(r"%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe"),
+            os.path.expandvars(r"%LocalAppData%\Google\Chrome\Application\chrome.exe"),
+        ]
+    for path in candidates:
+        if os.path.exists(path):
+            return path
+    return ""
+
+
+def _launch_chrome_independent():
+    """Chrome을 GUI와 독립적인 프로세스로 실행합니다 (닫아도 Chrome 유지)."""
+    import subprocess, os, sys
+    chrome = _find_chrome_exe()
+    if not chrome:
+        return False, "Chrome 실행 파일을 찾을 수 없습니다."
+    cmd = [
+        chrome,
+        f"--user-data-dir={CHROME_PROFILE_DIR}",
+        f"--remote-debugging-port={CHROME_DEBUG_PORT}",
+        "--no-first-run",
+        "--disable-blink-features=AutomationControlled",
+        "https://shop.bmw.co.kr/online/oem/model",
+    ]
+    kwargs = {"close_fds": True}
+    if sys.platform == "win32":
+        kwargs["creationflags"] = subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP
+    else:
+        kwargs["start_new_session"] = True
+    subprocess.Popen(cmd, **kwargs)
+    return True, ""
+
+
 def run_open_browser_for_login(url: str):
+    import time
     from playwright.sync_api import sync_playwright
 
     def log(m): evt_q.put(("log", m))
@@ -540,35 +589,42 @@ def run_open_browser_for_login(url: str):
 
     try:
         with sync_playwright() as pw:
-            status("로그인용 Chrome 실행 중...")
-            ctx = pw.chromium.launch_persistent_context(
-                str(CHROME_PROFILE_DIR),
-                headless=False,
-                channel=BROWSER_CHANNEL,
-                slow_mo=0,
-                viewport=None,
-                user_agent=(
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                    "AppleWebKit/537.36 (KHTML, like Gecko) "
-                    "Chrome/124.0.0.0 Safari/537.36"
-                ),
-                locale="ko-KR",
-                args=[
-                    "--start-maximized",
-                    "--disable-blink-features=AutomationControlled",
-                    "--no-first-run",
-                    f"--remote-debugging-port={CHROME_DEBUG_PORT}",
-                ],
-            )
-            page = ctx.pages[0] if ctx.pages else ctx.new_page()
-            status("Chrome 열림 — 브라우저에서 로그인 완료 후 '전체 스캔' 클릭")
-            log("  Chrome 열기: 스캔하지 않음, 로그인 세션만 유지")
+            # 1) 이미 실행 중인 Chrome 연결 시도
+            browser = None
+            for attempt in range(12):
+                try:
+                    browser = pw.chromium.connect_over_cdp(f"http://127.0.0.1:{CHROME_DEBUG_PORT}")
+                    break
+                except Exception:
+                    if attempt == 0:
+                        # Chrome 미실행 → 독립 프로세스로 실행
+                        status("Chrome 실행 중...")
+                        ok, err = _launch_chrome_independent()
+                        if not ok:
+                            evt_q.put(("error", f"Chrome 실행 실패: {err}"))
+                            return
+                        log("  Chrome 독립 프로세스로 실행됨")
+                    time.sleep(1)
+
+            if browser is None:
+                evt_q.put(("error", "Chrome 시작 실패 — 직접 Chrome을 실행한 뒤 다시 시도하세요."))
+                return
+
+            ctx = browser.contexts[0] if browser.contexts else None
+            page = ctx.pages[0] if ctx and ctx.pages else ctx.new_page() if ctx else None
+            if page is None:
+                evt_q.put(("error", "Chrome 컨텍스트를 가져오지 못했습니다."))
+                browser.close()
+                return
+
+            status("Chrome 연결됨 — 로그인 후 '전체 스캔' 클릭")
+            log("  Chrome 열기 완료: 로그인 세션 유지 중")
             try:
                 page.goto(url, wait_until="domcontentloaded", timeout=20000)
             except Exception as e:
                 log(f"  초기 페이지 이동 실패: {e}")
             evt_q.put(("browser_opened", None))
-            keep_browser_until_closed(page, log)
+            browser.close()  # 연결만 끊음 — Chrome 프로세스는 계속 실행
     except Exception:
         import traceback
         evt_q.put(("error", traceback.format_exc()))
@@ -645,9 +701,12 @@ def run_open_and_scan(url: str, emit_scanned=True):
     def dealer_options_ready():
         try:
             return bool(page.evaluate("""
-            (() => Array.from(document.querySelectorAll('.revervation_wrap2 .section02 select, select')).some(sel => {
+            (() => Array.from(document.querySelectorAll(
+                '.revervation_wrap2 .section02 select, select[name="dealer"], select[name="showRoom"], select'
+            )).some(sel => {
                 const opts = Array.from(sel.options || []).map(o => (o.textContent || '').trim()).filter(Boolean);
-                return opts.length > 1 || opts.some(t => !['딜러사 선택', '전시장 선택', '영업사원 선택'].includes(t));
+                const PLACEHOLDERS = ['딜러사 선택', '전시장 선택', '영업사원 선택', '선택', '-- 선택 --'];
+                return opts.some(t => !PLACEHOLDERS.includes(t));
             }))()
             """))
         except Exception:
@@ -665,26 +724,14 @@ def run_open_and_scan(url: str, emit_scanned=True):
 
     try:
         with sync_playwright() as pw:
-            status("브라우저 실행 중...")
-            ctx = pw.chromium.launch_persistent_context(
-                str(CHROME_PROFILE_DIR),
-                headless=False,
-                channel=BROWSER_CHANNEL,
-                slow_mo=0,
-                viewport=None,
-                user_agent=(
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                    "AppleWebKit/537.36 (KHTML, like Gecko) "
-                    "Chrome/124.0.0.0 Safari/537.36"
-                ),
-                locale="ko-KR",
-                args=[
-                    "--start-maximized",
-                    "--disable-blink-features=AutomationControlled",
-                    "--no-first-run",
-                ]
-            )
-            page = ctx.pages[0] if ctx.pages else ctx.new_page()
+            status("Chrome 세션 연결 중...")
+            try:
+                browser = pw.chromium.connect_over_cdp(f"http://127.0.0.1:{CHROME_DEBUG_PORT}")
+                ctx = browser.contexts[0] if browser.contexts else None
+            except Exception:
+                evt_q.put(("error", "Chrome이 실행 중이지 않습니다.\nchrome_login.bat 을 먼저 실행하세요."))
+                return
+            page = ctx.pages[-1] if ctx.pages else ctx.new_page()
             install_fast_scan_routes(ctx)
 
             # 상품 페이지 이동
@@ -782,7 +829,7 @@ def run_open_and_scan(url: str, emit_scanned=True):
             if emit_scanned:
                 evt_q.put(("scanned", fields))
 
-            ctx.close()
+            browser.close()
 
     except Exception:
         import traceback
@@ -814,55 +861,135 @@ def run_scan_all_models_one_session():
             except queue.Empty: pass
 
     def collect_models(page):
+        # filter/oem 페이지: div.filter-item 카드마다 div.on(구매하기) 클릭 후 URL 수집
+        FILTER_URL = "https://shop.bmw.co.kr/filter/oem"
         models, seen = [], set()
 
-        def add(name, href):
-            if not href:
+        def add(name, url):
+            if not url or not is_product_url(url) or url in seen:
                 return
-            url = page.evaluate("(href) => new URL(href, location.href).href", href)
-            if not is_product_url(url) or url in seen:
-                return
-            name = (name or _model_name_for_url(url)).replace("구매하기", "").replace("재고 없음", "").strip()
+            name = (name or "").strip()
+            if not name:
+                name = _model_name_for_url(url)
             seen.add(url)
-            models.append((name or _model_name_for_url(url), url))
+            models.append((name, url))
+            log(f"  차종 등록: {name!r} → {url}")
 
-        for name, url in PRODUCT_MODELS:
-            add(name, url)
+        def load_filter_page():
+            page.goto(FILTER_URL, wait_until="domcontentloaded", timeout=20000)
+            try: page.wait_for_load_state("networkidle", timeout=8000)
+            except Exception: pass
+            # 전체 카드 로드될 때까지 스크롤
+            for _ in range(15):
+                page.mouse.wheel(0, 1000)
+                page.wait_for_timeout(250)
 
-        page.goto("https://shop.bmw.co.kr/online/oem/model", wait_until="domcontentloaded", timeout=20000)
-        try: page.wait_for_load_state("networkidle", timeout=5000)
-        except Exception: pass
-        last_count = -1
-        stable = 0
-        for _ in range(24):
-            count = page.locator('a[href*="/edition/oem/"], a[href*="/online/oom/"]').count()
-            if count == last_count:
-                stable += 1
-            else:
-                stable = 0
-                last_count = count
-            page.mouse.wheel(0, 1000)
-            page.wait_for_timeout(200)
-            if stable >= 4:
-                break
-        links = page.evaluate("""
-        (() => Array.from(document.querySelectorAll('a[href*="/online/oom/"], a[href*="/edition/oem/"]')).map(a => ({
-            text: (a.innerText || a.getAttribute('title') || a.getAttribute('aria-label') || '').trim().replace(/\\s+/g, ' '),
-            href: a.getAttribute('href')
-        })))()
+        load_filter_page()
+
+        # 카드 정보 수집 (모델명 + 인덱스)
+        card_infos = page.evaluate("""
+        () => {
+            const cards = Array.from(document.querySelectorAll('div.filter-item'));
+            return cards.map((card, idx) => {
+                // 모델명: h3, h4, strong, 또는 텍스트가 가장 긴 자식
+                const h = card.querySelector('h1,h2,h3,h4,strong,.name,.model-name,.car-name,.title');
+                let name = h ? h.innerText.trim().replace(/\\s+/g,' ') : '';
+                if (!name) {
+                    // 가격 제외 가장 긴 텍스트 노드
+                    const spans = Array.from(card.querySelectorAll('p,span,div'))
+                        .map(el => (el.childNodes.length <= 2 ? el.innerText.trim() : ''))
+                        .filter(t => t.length > 5 && !t.includes('만원') && !t.includes('구매'));
+                    name = spans.sort((a,b) => b.length - a.length)[0] || '';
+                }
+                // 구매하기 div.on 존재 여부
+                const btn = card.querySelector('div.on, .btn-buy, .buy-btn');
+                return {name, idx, hasBuyBtn: !!btn};
+            });
+        }
         """)
-        for item in links:
-            add(item.get("text"), item.get("href"))
+        log(f"  filter-item 카드 {len(card_infos)}개 발견")
+
+        for info in card_infos:
+            try:
+                load_filter_page()
+
+                clicked = page.evaluate("""
+                (idx) => {
+                    const cards = Array.from(document.querySelectorAll('div.filter-item'));
+                    const card = cards[idx];
+                    if (!card) return null;
+                    const btn = card.querySelector('div.on, .btn-buy, .buy-btn');
+                    if (!btn) {
+                        // div.on 없으면 카드 자체 클릭 시도
+                        card.scrollIntoView({block:'center'});
+                        card.click();
+                        return 'card';
+                    }
+                    btn.scrollIntoView({block:'center'});
+                    btn.click();
+                    return 'btn';
+                }
+                """, info["idx"])
+
+                if not clicked:
+                    log(f"  [SKIP] 카드 {info['idx']} 클릭 실패")
+                    continue
+
+                # SPA URL 변경 대기
+                try:
+                    page.wait_for_function(
+                        "() => location.href.includes('/edition/oem/') || location.href.includes('/online/oom/')",
+                        timeout=6000,
+                    )
+                except Exception:
+                    pass
+
+                final_url = page.url
+                if is_product_url(final_url):
+                    add(info["name"], final_url)
+
+            except Exception as e:
+                log(f"  카드 {info['idx']} 수집 실패: {e}")
+
+        # 탭 URL 보조 수집
+        for tab_page in ctx.pages:
+            try:
+                url = tab_page.url
+                if is_product_url(url):
+                    add(_model_name_for_url(url), url)
+                    log(f"  탭에서 차종 발견: {url}")
+            except Exception:
+                pass
+
+        if not models:
+            log("  [경고] filter/oem 수집 실패 — online/oem/model 폴백")
+            page.goto("https://shop.bmw.co.kr/online/oem/model", wait_until="domcontentloaded", timeout=20000)
+            try: page.wait_for_load_state("networkidle", timeout=8000)
+            except Exception: pass
+            for _ in range(12):
+                page.mouse.wheel(0, 1000)
+                page.wait_for_timeout(300)
+            for tab_page in ctx.pages:
+                try:
+                    url = tab_page.url
+                    if is_product_url(url):
+                        add(_model_name_for_url(url), url)
+                except Exception:
+                    pass
+
         return models
 
     def click_entry_button(page):
         selectors = [
-            ".revervation_btn_alaram", ".revervation_btn", ".reservation_btn", ".reserve_btn",
+            "button:has-text('구매하기')", "a:has-text('구매하기')",
+            "button:has-text('예약하기')", "a:has-text('예약하기')",
+            ".revervation_btn", ".reservation_btn", ".reserve_btn",
+            "button:has-text('구매')", "a:has-text('구매')",
+            "button:has-text('예약')", "a:has-text('예약')",
+            "button:has-text('신청')", "a:has-text('신청')",
+            ".revervation_btn_alaram",
             "button:has-text('재고 알림 신청하기')", "a:has-text('재고 알림 신청하기')",
             "button:has-text('알림 신청')", "a:has-text('알림 신청')",
-            "button:has-text('예약')", "a:has-text('예약')",
-            "button:has-text('구매')", "a:has-text('구매')",
-            "button:has-text('신청')", "a:has-text('신청')",
         ]
         for sel in selectors:
             try:
@@ -890,9 +1017,12 @@ def run_scan_all_models_one_session():
     def dealer_options_ready(page):
         try:
             return bool(page.evaluate("""
-            (() => Array.from(document.querySelectorAll('.revervation_wrap2 .section02 select, select')).some(sel => {
+            (() => Array.from(document.querySelectorAll(
+                '.revervation_wrap2 .section02 select, select[name="dealer"], select[name="showRoom"], select'
+            )).some(sel => {
                 const opts = Array.from(sel.options || []).map(o => (o.textContent || '').trim()).filter(Boolean);
-                return opts.length > 1 || opts.some(t => !['딜러사 선택', '전시장 선택', '영업사원 선택'].includes(t));
+                const PLACEHOLDERS = ['딜러사 선택', '전시장 선택', '영업사원 선택', '선택', '-- 선택 --'];
+                return opts.some(t => !PLACEHOLDERS.includes(t));
             }))()
             """))
         except Exception:
@@ -1029,9 +1159,14 @@ def run_scan_all_models_one_session():
             raise RuntimeError("API token header is not captured yet")
         headers = dict(api_headers)
         headers["referer"] = referer
-        url = "https://shop.bmw.co.kr" + path
-        resp = ctx.request.get(url, headers=headers, timeout=15000)
-        data = resp.json()
+        full_url = "https://shop.bmw.co.kr" + path
+        # ctx.request.get은 브라우저 쿠키를 포함하지 않아 BMW API 인증 실패 → fetch 사용
+        data = page.evaluate("""
+            async ([url, hdrs]) => {
+                const r = await fetch(url, {headers: hdrs, credentials: 'include'});
+                return r.json();
+            }
+        """, [full_url, headers])
         if not data.get("success"):
             raise RuntimeError(f"API failed: {path} {data.get('apiError')}")
         return data["response"]
@@ -1121,28 +1256,179 @@ def run_scan_all_models_one_session():
             except Exception: pass
             log(f"  페이지: {page.url[:80]}")
 
+        def _click_rsv_option(section_keyword, log_label):
+            """rsv-section 내 첫 번째 옵션 클릭 후 재고 소진 모달 처리. 클릭한 라벨 반환."""
+            info = page.evaluate("""
+            (kw) => {
+                const sec = Array.from(document.querySelectorAll('.rsv-section, .revervation_wrap2 .trim')).find(
+                    s => (s.innerText || '').includes(kw)
+                );
+                if (!sec) return null;
+                const opt = sec.querySelector('a.tooltip:not(.soldout), a.activable:not(.soldout), li:not(.soldout) a')
+                    || sec.querySelector('a.tooltip, a.activable, li a');
+                if (!opt) return null;
+                const label = (opt.querySelector('img')?.getAttribute('alt') || opt.innerText || '').trim();
+                opt.scrollIntoView({block:'center', inline:'center'});
+                return {label, cls: opt.className};
+            }
+            """, section_keyword)
+            if not info:
+                log(f"  {log_label} 섹션 못 찾음")
+                return None
+            label = info.get("label", "")
+            log(f"  {log_label} 선택 시도: {label}")
+            try:
+                sec_loc = page.locator('.rsv-section, .revervation_wrap2 .trim').filter(has_text=section_keyword).first
+                opt_loc = sec_loc.locator('a.tooltip:not(.soldout), a.activable:not(.soldout)').first
+                if not opt_loc.count():
+                    opt_loc = sec_loc.locator('a.tooltip, a.activable').first
+                opt_loc.click(timeout=3000, force=True)
+                log(f"  {log_label} 선택 완료: {label}")
+                # 재고 소진 모달 처리
+                for modal_sel in [".cBtn", "button:has-text('확인')", "button:has-text('닫기')", ".btn-close"]:
+                    try:
+                        page.wait_for_selector(modal_sel, timeout=1500)
+                        page.click(modal_sel)
+                        log(f"  재고 소진 모달 닫음")
+                        page.wait_for_timeout(500)
+                        break
+                    except Exception:
+                        pass
+                return label
+            except Exception as e:
+                log(f"  {log_label} 클릭 실패: {e}")
+                return None
+
+        def trigger_dealer_api():
+            """JS fetch 인터셉터로 trim API pcode 캡처 → 딜러 API 직접 fetch → DOM 주입"""
+            edition_id = url.rstrip("/").split("/")[-1]
+
+            # JS 레벨에서 fetch를 후킹해 trim API 요청/응답을 window 변수에 저장
+            page.evaluate("""
+            () => {
+                if (window._bmwFetchHooked) {
+                    window._lastTrimReq = null;
+                    window._lastTrimResp = null;
+                    return;
+                }
+                window._bmwFetchHooked = true;
+                window._lastTrimReq = null;
+                window._lastTrimResp = null;
+                const orig = window.fetch;
+                window.fetch = function(url, opts) {
+                    const p = orig.apply(this, arguments);
+                    if (typeof url === 'string' && url.includes('choice/vehicle/trim')) {
+                        if (opts && opts.body) {
+                            try { window._lastTrimReq = JSON.parse(opts.body); } catch(e) {}
+                        }
+                        p.then(r => r.clone().json().then(d => { window._lastTrimResp = d; })).catch(()=>{});
+                    }
+                    return p;
+                };
+            }
+            """)
+
+            _click_rsv_option("익스테리어", "외장")
+
+            # trim API 응답 대기 (최대 4초, 200ms 폴링)
+            ext_pcode = ""
+            int_pcode = ""
+            for _ in range(20):
+                result = page.evaluate("""
+                () => ({
+                    req: window._lastTrimReq || null,
+                    resp: window._lastTrimResp || null
+                })
+                """)
+                req = result.get("req") or {}
+                resp = result.get("resp") or {}
+                cc = req.get("chainingCode", "")
+                if cc and "-" not in cc:
+                    ext_pcode = cc
+                items = resp.get("response", [])
+                if isinstance(items, list) and items:
+                    int_pcode = items[0].get("pcode", "")
+                if ext_pcode and int_pcode:
+                    break
+                page.wait_for_timeout(200)
+
+            if ext_pcode and int_pcode:
+                chaining = f"{ext_pcode}-{int_pcode}"
+                log(f"  딜러 API 직접 호출: {edition_id} {chaining}")
+                dealer_data = page.evaluate("""
+                async ([eid, cc]) => {
+                    try {
+                        const r = await fetch('/shop/api/choice/vehicle/dealer', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            credentials: 'include',
+                            body: JSON.stringify({editionId: eid, chainingCode: cc})
+                        });
+                        return await r.json();
+                    } catch(e) { return {success: false, error: String(e)}; }
+                }
+                """, [edition_id, chaining])
+                if dealer_data.get("success"):
+                    dealers = dealer_data.get("response", {}).get("dealerInfo", [])
+                    if dealers:
+                        log(f"  [DEBUG] 딜러 첫 항목 키: {list(dealers[0].keys())}")
+                    log(f"  딜러 {len(dealers)}개 → DOM 주입")
+                    page.evaluate("""
+                    ([dealers]) => {
+                        const sel = document.querySelector('select[name="dealer"]');
+                        if (!sel) return;
+                        const existing = new Set(Array.from(sel.options).map(o=>o.value));
+                        dealers.forEach(d => {
+                            const v = String(d.dealerCd || d.dealerId || '');
+                            if (!v || existing.has(v)) return;
+                            const opt = document.createElement('option');
+                            opt.value = v;
+                            opt.textContent = d.dealerName || v;
+                            sel.appendChild(opt);
+                        });
+                    }
+                    """, [dealers])
+                    return True
+                else:
+                    log(f"  딜러 API 실패: {dealer_data.get('error', '')}")
+            else:
+                log(f"  trim API 미응답 (ext='{ext_pcode}' int='{int_pcode}') — 인테리어 클릭 폴백")
+                for _ in range(10):
+                    has_int = page.evaluate("""
+                    () => {
+                        const s = Array.from(document.querySelectorAll('.rsv-section'))
+                            .find(s => (s.innerText||'').includes('인테리어'));
+                        return !!(s && s.querySelector('a.tooltip, a.activable'));
+                    }""")
+                    if has_int:
+                        break
+                    page.wait_for_timeout(300)
+                _click_rsv_option("인테리어", "인테리어")
+            return False
+
         def click_login_entry():
-            if has_option_panel(page) and not dealer_options_ready(page):
-                status("딜러위치 로드를 위해 로그인 진입...")
-                log("  딜러위치 미로드 — 로그인 진입")
-                click_entry_button(page)
-                page.wait_for_timeout(800)
-            elif not has_option_panel(page):
-                log("  옵션 패널 미감지 — 진입 버튼 클릭")
-                click_entry_button(page)
-                page.wait_for_timeout(800)
+            status("딜러위치 로드를 위해 진입 버튼 클릭...")
+            log("  딜러위치 미로드 — 진입 버튼 클릭")
+            click_entry_button(page)
+            page.wait_for_timeout(1000)
 
-            try:
-                page.wait_for_selector(".cBtn", timeout=1500)
-                page.click(".cBtn")
-                log("  모달 확인 클릭")
-            except Exception:
-                pass
+            # 모달(로그인 안내, 약관 등) 닫기
+            for modal_sel in [".cBtn", ".btn-close", "button:has-text('확인')", "button:has-text('닫기')"]:
+                try:
+                    page.wait_for_selector(modal_sel, timeout=1500)
+                    page.click(modal_sel)
+                    log("  모달 확인 클릭")
+                    page.wait_for_timeout(600)
+                    break
+                except Exception:
+                    pass
 
-            try:
-                page.wait_for_url("**/customer.bmwgroup.com/**", timeout=5000)
-            except Exception:
-                pass
+            # 구매 폼이 뜰 때까지 대기 (최대 8초)
+            for _ in range(16):
+                if has_option_panel(page):
+                    break
+                page.wait_for_timeout(500)
+            page.wait_for_timeout(500)
 
         def perform_login_if_needed():
             if "customer.bmwgroup.com" not in page.url:
@@ -1153,42 +1439,30 @@ def run_scan_all_models_one_session():
             wait_cmd("login_done")
             return True
 
-        for attempt in range(1, 4):
-            if attempt > 1:
-                log(f"  재시도 {attempt}/3 — 로그인 세션 확인")
-            load_product()
-            for _ in range(8):
-                if dealer_options_ready(page):
-                    break
-                page.wait_for_timeout(250)
-            if dealer_options_ready(page):
-                break
-
-            click_login_entry()
-            performed_login = perform_login_if_needed()
-            if performed_login:
-                status("로그인 세션으로 상품 페이지 복귀...")
-                load_product()
-
-            for _ in range(16):
-                if dealer_options_ready(page):
-                    break
-                page.wait_for_timeout(250)
-            if dealer_options_ready(page):
-                break
+        load_product()
+        # 폼이 이미 열려있으면 진입 버튼 불필요 (재고 소진 모델 등)
+        if has_option_panel(page):
+            log("  옵션 패널 이미 표시 중 — 진입 버튼 생략")
         else:
-            raise RuntimeError("로그인 후에도 딜러위치 옵션이 로드되지 않아 이 차종 스캔을 중단했습니다.")
+            click_login_entry()
+            perform_login_if_needed()
+
+        # 외장 클릭 → trim API 인터셉트 → 딜러 API 직접 fetch → DOM 주입
+        if not dealer_options_ready(page):
+            trigger_dealer_api()
+
+        # DOM 주입 후 짧게 대기 (최대 3초)
+        for _ in range(12):
+            if dealer_options_ready(page):
+                break
+            page.wait_for_timeout(250)
+
+        if not dealer_options_ready(page):
+            log("  [WARN] 딜러위치 옵션 미로드 — 현재 화면 그대로 스캔")
 
         fields = page.evaluate(SCAN_JS)
-        has_dealer_data = any(
-            f.get("kind") == "select" and any(
-                str(o.get("text", "")).strip() not in ("딜러사 선택", "전시장 선택", "영업사원 선택")
-                for o in f.get("options", [])
-            )
-            for f in fields
-        )
-        if not has_dealer_data:
-            raise RuntimeError("딜러위치 옵션 없는 스캔 결과라 저장하지 않았습니다.")
+        if not fields:
+            raise RuntimeError("스캔 결과가 비어있습니다 (페이지 로드 실패 가능성).")
         fields_json = json.dumps(fields, ensure_ascii=False, indent=2)
         fields_file_for_url(url).write_text(fields_json, encoding="utf-8")
         FIELDS_FILE.write_text(fields_json, encoding="utf-8")
@@ -1240,34 +1514,13 @@ def run_scan_all_models_one_session():
     try:
         with sync_playwright() as pw:
             status("로그인 Chrome 세션 연결 중...")
-            ctx = None
             try:
                 browser = pw.chromium.connect_over_cdp(f"http://127.0.0.1:{CHROME_DEBUG_PORT}")
                 ctx = browser.contexts[0] if browser.contexts else None
-                log("  열린 로그인 Chrome 세션에 연결")
+                log("  Chrome CDP 연결 성공")
             except Exception as e:
-                log(f"  열린 Chrome 연결 실패 — 새 로그인 세션 실행: {e}")
-            if ctx is None:
-                status("전체 스캔 브라우저 실행 중...")
-                ctx = pw.chromium.launch_persistent_context(
-                    str(CHROME_PROFILE_DIR),
-                    headless=False,
-                    channel=BROWSER_CHANNEL,
-                    slow_mo=0,
-                    viewport=None,
-                    user_agent=(
-                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                        "AppleWebKit/537.36 (KHTML, like Gecko) "
-                        "Chrome/124.0.0.0 Safari/537.36"
-                    ),
-                    locale="ko-KR",
-                    args=[
-                        "--start-maximized",
-                        "--disable-blink-features=AutomationControlled",
-                        "--no-first-run",
-                        f"--remote-debugging-port={CHROME_DEBUG_PORT}",
-                    ],
-                )
+                evt_q.put(("error", "Chrome이 실행 중이지 않습니다.\nchrome_login.bat 을 먼저 실행하세요."))
+                return
             page = ctx.pages[0] if ctx.pages else ctx.new_page()
             install_fast_scan_routes(ctx)
             page.on("response", capture_api_headers)
@@ -1283,38 +1536,26 @@ def run_scan_all_models_one_session():
                 evt_q.put(("models_discovered", models))
                 log(f"  전체 스캔 대상: {len(models)}개")
                 ensure_logged_before_scan(page, models)
-                try:
-                    api_models = collect_models_api(ctx)
-                    if api_models:
-                        models = api_models
-                        DISCOVERED_PRODUCT_MODELS.update({url: name for name, url in models})
-                        save_models_manifest(models)
-                        evt_q.put(("models_discovered", models))
-                    done = scan_all_by_api(ctx, models)
-                    status(f"전체 차종 API 스캔 완료 ({done}개)")
-                    evt_q.put(("scan_all_done", done))
-                    keep_browser = True
-                except Exception as api_error:
-                    log(f"  API 스캔 실패 — DOM 스캔으로 전환: {api_error}")
-                    for idx, (name, url) in enumerate(models, 1):
-                        status(f"전체 스캔 {idx}/{len(models)} — {name}")
-                        log(f"[전체 스캔] {idx}/{len(models)} {name}: {url}")
-                        ensure_logged_scan_page(page, url)
-                    save_models_manifest(models)
-                    status(f"전체 차종 스캔 완료 ({len(models)}개)")
-                    evt_q.put(("scan_all_done", len(models)))
-                    keep_browser = True
-            finally:
-                if keep_browser:
+                # BMW 샵 API(/shop/api/oem/model/list) 폐기됨 — DOM 스캔만 사용
+                for idx, (name, url) in enumerate(models, 1):
+                    status(f"전체 스캔 {idx}/{len(models)} — {name}")
+                    log(f"[전체 스캔] {idx}/{len(models)} {name}: {url}")
                     try:
-                        ctx.unroute("**/*")
-                        log("  스캔 완료: 이미지 차단 해제")
-                    except Exception:
-                        pass
-                    status("전체 스캔 완료 — 로그인 브라우저 유지 중")
-                    log("  로그인 세션 유지: 이 브라우저를 닫지 않고 구매하기에서 재사용합니다.")
-                    keep_browser_until_closed(page, log)
-                ctx.close()
+                        ensure_logged_scan_page(page, url)
+                    except Exception as scan_err:
+                        log(f"  [SKIP] {name} 스캔 실패 — 건너뜀: {scan_err}")
+                save_models_manifest(models)
+                status(f"전체 차종 스캔 완료 ({len(models)}개)")
+                evt_q.put(("scan_all_done", len(models)))
+                keep_browser = True
+            finally:
+                try:
+                    ctx.unroute("**/*")
+                except Exception:
+                    pass
+                status("전체 스캔 완료 — Chrome 세션 유지")
+                log("  스캔 완료: Chrome은 계속 실행 중 (세션 유지)")
+                browser.close()
     except Exception:
         import traceback
         evt_q.put(("error", traceback.format_exc()))
@@ -1364,12 +1605,24 @@ def run_buy(url: str, fill_data: list, dealer_defaults: dict | None = None):
         if not desired:
             log(f"  [SKIP] {label} 고정값 없음")
             return False
+        # 구형(.revervation_wrap2)과 신형(select[name='dealer'/'showRoom']) 모두 지원
+        NEW_SELS = ["select[name='dealer']", "select[name='showRoom']", "select[name='showRoom'] ~ select"]
         sel = f".revervation_wrap2 .section02 select:nth-of-type({index + 1})"
         try:
-            pg.wait_for_selector(sel, timeout=10000)
+            pg.wait_for_selector(sel, timeout=3000)
         except Exception:
-            log(f"  [ERR] {label} 드롭다운 없음")
-            return False
+            # 신형 페이지 셀렉터 시도
+            new_sel = NEW_SELS[index] if index < len(NEW_SELS) else None
+            if new_sel:
+                try:
+                    pg.wait_for_selector(new_sel, timeout=7000)
+                    sel = new_sel
+                except Exception:
+                    log(f"  [ERR] {label} 드롭다운 없음")
+                    return False
+            else:
+                log(f"  [ERR] {label} 드롭다운 없음")
+                return False
         for _ in range(24):
             try:
                 matched = pg.evaluate(
@@ -1996,36 +2249,14 @@ def run_buy(url: str, fill_data: list, dealer_defaults: dict | None = None):
 
     try:
         with sync_playwright() as pw:
-            status("로그인 브라우저 세션 연결 중...")
-            browser = None
-            ctx = None
+            status("Chrome 세션 연결 중...")
             try:
                 browser = pw.chromium.connect_over_cdp(f"http://127.0.0.1:{CHROME_DEBUG_PORT}")
                 ctx = browser.contexts[0] if browser.contexts else None
-                log("  열린 로그인 브라우저에 연결")
-            except Exception as e:
-                log(f"  열린 브라우저 연결 실패 — 저장된 프로필로 재사용: {e}")
-
-            if ctx is None:
-                ctx = pw.chromium.launch_persistent_context(
-                    str(CHROME_PROFILE_DIR),
-                    headless=False,
-                    channel=BROWSER_CHANNEL,
-                    slow_mo=0,
-                    viewport=None,
-                    user_agent=(
-                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                        "AppleWebKit/537.36 (KHTML, like Gecko) "
-                        "Chrome/124.0.0.0 Safari/537.36"
-                    ),
-                    locale="ko-KR",
-                    args=[
-                        "--start-maximized",
-                        "--disable-blink-features=AutomationControlled",
-                        "--no-first-run",
-                        f"--remote-debugging-port={CHROME_DEBUG_PORT}",
-                    ],
-                )
+                log("  Chrome CDP 연결 성공")
+            except Exception:
+                evt_q.put(("error", "Chrome이 실행 중이지 않습니다.\nchrome_login.bat 을 먼저 실행하세요."))
+                return
             try:
                 ctx.unroute("**/*")
                 log("  구매 흐름: 스캔용 이미지 차단 해제")
@@ -2155,12 +2386,12 @@ class BMWApp(tk.Tk):
         self._field_widgets: list = []
         self._models = {name: url for name, url in PRODUCT_MODELS}
         self._load_models_manifest()
-        first_name = next(iter(self._models), PRODUCT_MODELS[0][0])
+        first_name = next(iter(self._models), "")
         self._model_var = tk.StringVar(value=first_name)
         self._url_var = tk.StringVar(value=self._models.get(first_name, PRODUCT_URL))
-        self._dealer_var = tk.StringVar()
-        self._showroom_var = tk.StringVar()
-        self._salesperson_var = tk.StringVar()
+        self._dealer_var = tk.StringVar(value="바바리안모터스")
+        self._showroom_var = tk.StringVar(value="인천전시장")
+        self._salesperson_var = tk.StringVar(value="김성욱B")
 
         self._build()
         self._load_saved()
@@ -2330,12 +2561,16 @@ class BMWApp(tk.Tk):
         }
         for label in ("익스테리어", "인테리어"):
             for f in fields:
-                if f.get("kind") == "option" and f.get("label") == label:
+                fl = f.get("label", "")
+                if f.get("kind") == "option" and fl.startswith(label):
+                    f = dict(f); f["label"] = label
                     add(f)
                     break
 
         for f in fields:
-            if f.get("kind") == "option" and f.get("label") == "결제방법 선택":
+            fl = f.get("label", "")
+            if f.get("kind") == "option" and ("결제방법" in fl or "결방법" in fl):
+                f = dict(f); f["label"] = "결제방법 선택"
                 add(f)
                 break
 
@@ -2383,9 +2618,9 @@ class BMWApp(tk.Tk):
                 self._model_var.set(model_name)
             self._url_var.set(cfg.get("__url__", PRODUCT_URL))
             dealer_defaults = cfg.get("__dealer_defaults__", {})
-            self._dealer_var.set(dealer_defaults.get("dealer", ""))
-            self._showroom_var.set(dealer_defaults.get("showroom", ""))
-            self._salesperson_var.set(dealer_defaults.get("salesperson", ""))
+            self._dealer_var.set(dealer_defaults.get("dealer", "바바리안모터스"))
+            self._showroom_var.set(dealer_defaults.get("showroom", "인천전시장"))
+            self._salesperson_var.set(dealer_defaults.get("salesperson", "김성욱B"))
             saved = cfg.get("__fields__", {})
             cnt = 0
             for f, var in self._field_widgets:

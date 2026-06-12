@@ -1,37 +1,5 @@
 [
   {
-    "kind": "option",
-    "id": "",
-    "name": "trim:익스테리어 알파인 화이트",
-    "selector": "",
-    "label": "익스테리어 알파인 화이트",
-    "options": [
-      {
-        "text": "알파인 화이트",
-        "value": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a",
-        "selector": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a",
-        "soldout": false,
-        "active": true
-      }
-    ]
-  },
-  {
-    "kind": "option",
-    "id": "",
-    "name": "trim:인테리어 타공 센사텍 꼬냑",
-    "selector": "",
-    "label": "인테리어 타공 센사텍 꼬냑",
-    "options": [
-      {
-        "text": "타공 센사텍 꼬냑",
-        "value": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(2) > div > a",
-        "selector": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(2) > div > a",
-        "soldout": false,
-        "active": true
-      }
-    ]
-  },
-  {
     "kind": "select",
     "id": "",
     "name": "dealer",
@@ -41,10 +9,6 @@
       {
         "text": "딜러사 선택",
         "value": ""
-      },
-      {
-        "text": "한독 모터스",
-        "value": "28261"
       }
     ]
   },

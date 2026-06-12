@@ -1,0 +1,128 @@
+[
+  {
+    "kind": "option",
+    "id": "",
+    "name": "trim:익스테리어 옥스포드 그린",
+    "selector": "",
+    "label": "익스테리어 옥스포드 그린",
+    "options": [
+      {
+        "text": "모리셔스 블루",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a:nth-of-type(1)",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a:nth-of-type(1)",
+        "soldout": true,
+        "active": false
+      },
+      {
+        "text": "브라이트 레드",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a:nth-of-type(2)",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a:nth-of-type(2)",
+        "soldout": true,
+        "active": false
+      },
+      {
+        "text": "옥스포드 그린",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a:nth-of-type(3)",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a:nth-of-type(3)",
+        "soldout": false,
+        "active": true
+      },
+      {
+        "text": "데이토나 바이올렛",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a:nth-of-type(4)",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a:nth-of-type(4)",
+        "soldout": true,
+        "active": false
+      },
+      {
+        "text": "코스모스 블랙",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a:nth-of-type(5)",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(1) > div > a:nth-of-type(5)",
+        "soldout": false,
+        "active": false
+      }
+    ]
+  },
+  {
+    "kind": "option",
+    "id": "",
+    "name": "trim:인테리어 풀 레더 메리노 블랙",
+    "selector": "",
+    "label": "인테리어 풀 레더 메리노 블랙",
+    "options": [
+      {
+        "text": "풀 레더 메리노 블랙",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(2) > div > a",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(2) > div > a",
+        "soldout": false,
+        "active": true
+      }
+    ]
+  },
+  {
+    "kind": "select",
+    "id": "",
+    "name": "dealer",
+    "selector": "select[name=\"dealer\"]",
+    "label": "딜러사",
+    "options": [
+      {
+        "text": "딜러사 선택",
+        "value": ""
+      },
+      {
+        "text": "바바리안 모터스",
+        "value": "25230"
+      },
+      {
+        "text": "동성 모터스",
+        "value": "25233"
+      }
+    ]
+  },
+  {
+    "kind": "select",
+    "id": "",
+    "name": "showRoom",
+    "selector": "select[name=\"showRoom\"]",
+    "label": "전시장",
+    "options": [
+      {
+        "text": "전시장 선택",
+        "value": ""
+      }
+    ]
+  },
+  {
+    "kind": "select",
+    "id": "",
+    "name": "",
+    "selector": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > select:nth-of-type(3)",
+    "label": "현금",
+    "options": [
+      {
+        "text": "영업사원 선택",
+        "value": ""
+      }
+    ]
+  },
+  {
+    "kind": "option",
+    "id": "",
+    "name": "결방법 선택:현금|BMW금융",
+    "selector": "",
+    "label": "결방법 선택",
+    "options": [
+      {
+        "text": "현금",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(2) > div > label:nth-of-type(1)",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(2) > div > label:nth-of-type(1)"
+      },
+      {
+        "text": "BMW금융",
+        "value": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(2) > div > label:nth-of-type(2)",
+        "selector": "body > div:nth-of-type(1) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(2) > div > label:nth-of-type(2)"
+      }
+    ]
+  }
+]
